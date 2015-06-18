@@ -1,0 +1,92 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf190
+{\fonttbl\f0\fnil\fcharset0 AmericanTypewriter-Light;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs36 \cf0 First get the input.txt ready\
+\
+\ul input.txt\ulnone  :\
+\
+n k m\
+G[i][j]\
+\'85(n x k , m+1 , bit strings -signifying generator impulses)\
+\
+\ul Use GenRandomBitSeq\ulnone  :\
+./GenRandomBitSeq <no of sequences> <no of bits per sequence>\
+\
+use it like this :\
+./GenRandomBitSeq 100 5 >>input.txt\
+\
+\ul Use Convo_code_encoder\ulnone  \
+\
+now after the input file is ready, pass it as input to this executable file, and store its output.\
+\
+eg. \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+\cf0 \CocoaLigature0 ./Convo_code_encoder <input.txt >out.txt\
+\
+now we need to send the encoded word through an AWGN channel. In doing so it will get mixed with some noise.\
+\
+*Use, Channel(understand this, but there is no need to use it as I\'92ve built an automaton that\'92ll efficiently calculate everything )\
+\
+eg.\
+./Channel <snr> < out.txt > f1.txt\
+f1.txt\'92s format\
+<snr>\
+<no of codewords>\
+<received codewords>\
+.\
+.\
+.\
+\
+Use automatejob\
+run ./automatejob\
+this will generate all files that\'92ll account for the variation in the snr values. Look at Channel above to that the snr is just changed in all files to get different received vectors.\
+\
+Use decode\
+decode calls viterbi to output results!!\
+use decode like this :\
+\pard\tx529\pardeftab529\pardirnatural
+
+\fs28 \cf0 ./decode <no_of_files> <name_of_decoding_code>
+\fs36  \
+no_of _files - assumed f<no> are the channel sent words.\
+decoding code - is the name of the program. for our case it is viterbi.\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+\cf0 it calls \
+./viterbi < [channel sent code file<no>] > o<no>\
+thus it gives decoded output files of the form o<no>.\
+\
+then we have Ber_Snr ( but u don\'92t need to use it)\
+this is run with two input files\
+./Ber_Snr <inputfile_name> <outputfile_name>\
+the output file contains the following\
+<snr>\
+<no of decoded codewords>\
+<decoded codeword 1>\
+. \
+.\
+.\
+<decoded codeword n>\
+\
+and the input file is of the form\
+<no of information sequences>\
+<info 1>\
+.\
+.\
+.\
+<info n>\
+\
+Ber_Snr compares the two files to find the bit errors. \
+\
+use automatejob2.c\
+./automatejob2 <input_filename> <max no of files>\
+input file - here is the original information codeword sent (inp.txt in our case)\
+Here you can also change the file name that stores final results to have more than one result.\
+char *w2=\'93Results.csv\'94;\
+change this content here to get different file that will store the values.\
+\
+the results are stored as (snr, ber) pairs each line for each decoded file.\
+\
+}
